@@ -56,6 +56,10 @@ class ImageProcessing():
         _, thresh = cv2.threshold(gray, 80, 255, cv2.THRESH_BINARY)
         # the binary image is then dilated to merge small groups of blobs together
         closing = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (15, 15)))
+        # Visualize closing image
+        cv2.imshow('closing', closing)
+        cv2.waitKey(1)
+
         # the robot is assumed to be the largest contour
         largest_contour = cls.get_largest_contour(closing)
         if largest_contour is not None:
