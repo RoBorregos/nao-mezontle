@@ -16,7 +16,7 @@
 Demonstrates the gait manager (inverse kinematics + simple ellipsoid path).
 """
 
-from controller import Robot
+from controller import Robot, Motion
 import sys
 sys.path.append('..')
 # Eve's locate_opponent() is implemented in this module:
@@ -43,6 +43,9 @@ class RoBorregos (Robot):
         self.counter = 0
 
     def run(self):
+        head_init = Motion('../motions/HeadDown.motion')
+        head_init.setLoop(False)
+        head_init.play()
         while self.step(self.time_step) != -1:
             # We need to update the internal theta value of the gait manager at every step:
             t = self.getTime()
