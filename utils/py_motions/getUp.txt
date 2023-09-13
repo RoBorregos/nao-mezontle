@@ -1,0 +1,32 @@
+Naos motion points
+
+Inicio:
+Brazo derecho: hacia arriba
+Mano volteando a dirrecion de cara
+
+Brazo izquierdo; estirado enfrente
+Cabeza, piernas, enfrente.
+
+1era transicion:
+
+pierna derecha incrementa kneepitch y disminuir ancklepitch
+cabeza volteando a izquierda y para atrás
+pierna izquierda baja el pitch, yaw y rol, para empezar a cruzar la pierna
+brazo izq se extiende
+
+pierna derecha casi al minimo de anklepitch, kneepitch llega al maximo
+
+2nda transicion:
+brazo derecho sobre el piso, codo contra suelo.
+brazo izq estirado
+mover cabeza: incrementar yaw max, disminuir pitch minimo
+
+brazo arriba:
+poco shoulder pitch
+maximo shoulder roll
+elbow al centro
+
+
+3era transicion:
+disminuye el kneepitch
+Extender el brazo derecho, Rshoulder, bajar el roll,
