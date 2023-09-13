@@ -24,7 +24,16 @@ from utils.image_processing import ImageProcessing as IP
 from utils.fall_detection import FallDetection
 from utils.gait_manager import GaitManager
 from utils.camera import Camera
+import mediapipe as mp
+import cv2
+import numpy as np
 
+# Calling the pose solution from MediaPipe
+mp_pose = mp.solutions.pose
+
+# Calling the solution for image drawing from MediaPipe
+mp_drawing = mp.solutions.drawing_utils
+mp_drawing_styles = mp.solutions.drawing_styles
 
 class RoBorregos (Robot):
     SMALLEST_TURNING_RADIUS = 0.1
@@ -46,15 +55,51 @@ class RoBorregos (Robot):
         head_init = Motion('../motions/HeadDown.motion')
         head_init.setLoop(False)
         head_init.play()
-        while self.step(self.time_step) != -1:
-            # We need to update the internal theta value of the gait manager at every step:
-            t = self.getTime()
-            self.gait_manager.update_theta()
-            if 0.3 < t < 2:
-                self.start_sequence()
-            elif t > 2:
-                self.fall_detector.check()
-                self.walk()
+        with mp_pose.Pose(
+            min_detection_confidence=0.5,
+            min_tracking_confidence=0.5) as pose:
+            while self.step(self.time_step) != -1:
+                # We need to update the internal theta value of the gait manager at every step:
+                t = self.getTime()
+                self.gait_manager.update_theta()
+                self.poseEstimator(pose)
+                self.getRingThreshold(self.camera.get_image())
+                # cv2.imwrite('image.png', self.camera.get_image())
+                if 0.3 < t < 2:
+                    self.start_sequence()
+                elif t > 2:
+                    self.fall_detector.check()
+                    self.walk()
+
+    def getRingThreshold(self, img):
+        # (hMin = 17 , sMin = 61, vMin = 189), (hMax = 29 , sMax = 76, vMax = 255)
+        # LAB_THRESHOLD = (71, 90, -10, 6, 15, 72)
+        # image = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
+        # mask = cv2.inRange(image, (LAB_THRESHOLD[0], LAB_THRESHOLD[2], LAB_THRESHOLD[4]), (LAB_THRESHOLD[1], LAB_THRESHOLD[3], LAB_THRESHOLD[5]))
+        # cv2.imshow('mask', mask)
+        lower = np.array([17, 61, 189])
+        upper = np.array([29, 76, 255])
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        mask = cv2.inRange(hsv, lower, upper)
+        cv2.imshow('mask', mask)
+        # return mask
+
+    def poseEstimator(self, pose):
+        """Estimates the oponents's pose using the camera."""
+        img = self.camera.get_image()
+        imageCopy = img.copy()
+        imageCopy = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        imageCopy = cv2.resize(imageCopy, (480, 640))
+        results = pose.process(imageCopy)
+        imageCopy.flags.writeable = True
+        image_w = cv2.cvtColor(imageCopy, cv2.COLOR_RGB2BGR)
+        mp_drawing.draw_landmarks(
+            image_w,
+            results.pose_landmarks,
+            mp_pose.POSE_CONNECTIONS,
+            landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
+        cv2.imshow('MediaPipe Pose', image_w)
+        
 
     def start_sequence(self):
         """At the beginning of the match, the robot walks forwards to move away from the edges."""
