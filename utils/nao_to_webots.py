@@ -24,11 +24,11 @@ def convert_time_to_webots_time(time, pose):
 
     return '00:' + ("%02d" % (sec,)) + ':' + ("%03d" % (milisec,)) + ',' + ('Pose%d' % pose)
 
-all_names, all_times, all_keys = movements.getUp() # NOTE: Python function should be called here!
+all_names, all_times, all_keys = movements.ghoul2() # NOTE: Python function should be called here!
 first_row = ['#WEBOTS_MOTION','V1.0'] + all_names
 
 if __name__ == "__main__":
-    motion = "GetUp.motion"
+    motion = "Ghoul2.motion"
     time_set = set()
     with open(motion, 'w', encoding='UTF8', newline='') as f:
         writer = csv.writer(f)

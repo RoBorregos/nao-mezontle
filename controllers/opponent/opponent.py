@@ -16,16 +16,23 @@
    Demonstrates how to play a simple motion file."""
 
 from controller import Robot, Motion
-
+import sys
+sys.path.append('..')
+from utils.single_movement import SingleMovement
+# from utils.fall_detection import FallDetection
 
 class Wrestler (Robot):
     def run(self):
-        motion = Motion('../motions/GetUp2.motion')  # look into this text file, it's easy to understand
-        motion.setLoop(True)
-        motion.play()
-        time_step = int(self.getBasicTimeStep())  # retrieves the WorldInfo.basicTimeTime (ms) from the world file
-        while self.step(time_step) != -1:  # runs the hand wave motion in a loop until Webots quits
-            pass
+        self.time_step = int(self.getBasicTimeStep())
+        self.singleMovemement = SingleMovement(self.time_step, self)
+        print("Test cmd")
+        self.singleMovemement.exec()
+        # motion = Motion('../motions/GetUp2.motion')  # look into this text file, it's easy to understand
+        # motion.setLoop(True)
+        # motion.play()
+        # time_step = int(self.getBasicTimeStep())  # retrieves the WorldInfo.basicTimeTime (ms) from the world file
+        # while self.step(time_step) != -1:  # runs the hand wave motion in a loop until Webots quits
+        #     pass
 
 
 # create the Robot instance and run main loop
