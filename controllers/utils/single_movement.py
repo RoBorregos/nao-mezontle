@@ -30,7 +30,9 @@ class SingleMovement:
     def exec(self):
         '''Exec single movement.'''
         # self.current_motion.set(self.library.get('Stand'))
-        self.current_motion.play_sync(self.library.get('Ghoul2'), self.robot, self.time_step)
+        self.current_motion.play_sync(self.library.get('Ghoul3'), self.robot, self.time_step)
+        # self.current_motion.play_sync(self.library.get('Ghoul3'), self.robot, self.time_step)
+        # self.current_motion.play_sync(self.library.get('StandUpFromFront'), self.robot, self.time_step)
         print("Finished single movement")
         while self.robot.step(self.time_step) != -1:
             pass
