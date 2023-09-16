@@ -15,18 +15,34 @@
 """Minimalist controller example for the Robot Wrestling Tournament.
    Demonstrates how to play a simple motion file."""
 
-from controller import Robot, Motion
+from controller import Robot
 import sys
 sys.path.append('..')
-from utils.single_movement import SingleMovement
-# from utils.fall_detection import FallDetection
+
+from utils.image_processing import ImageProcessing as IP
+from utils.fall_detection import FallDetection
+from utils.gait_manager import GaitManager
+from utils.camera import Camera
+from utils.sonar import Sonar
+from utils.move_routine import MoveRoutine
 
 class Wrestler (Robot):
-    def run(self):
+    def __init__(self):
+        Robot.__init__(self)
         self.time_step = int(self.getBasicTimeStep())
-        self.singleMovemement = SingleMovement(self.time_step, self)
-        print("Test cmd")
-        self.singleMovemement.exec()
+        self.camera = Camera(self)
+        self.fall_detector = FallDetection(self.time_step, self)
+        self.gait_manager = GaitManager(self, self.time_step)
+        self.sonar = Sonar(self, self.time_step)
+
+    def run(self):
+        #self.singleMovemement = MoveRoutine(self.time_step, self)
+        print("Test in opponent")
+        while self.step(self.time_step) != -1:
+            right, left = self.sonar.get_new_averages()
+            print("r: " + str(right) + " l: " + str(left))
+        
+        #self.singleMovemement.exec()
         # motion = Motion('../motions/GetUp2.motion')  # look into this text file, it's easy to understand
         # motion.setLoop(True)
         # motion.play()

@@ -20,7 +20,7 @@ from .finite_state_machine import FiniteStateMachine
 from .current_motion_manager import CurrentMotionManager
 
 
-class SingleMovement:
+class MoveRoutine:
     def __init__(self, time_step, robot):
         self.time_step = time_step
         self.robot = robot
