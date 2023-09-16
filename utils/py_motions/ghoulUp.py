@@ -177,3 +177,8 @@ def ghoulUp():
 
 
     return names, times, keys
+
+n, t, k = ghoulUp()
+print(n)
+print(t)
+print(k)
