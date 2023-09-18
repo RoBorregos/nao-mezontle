@@ -36,18 +36,16 @@ class Wrestler (Robot):
         self.sonar = Sonar(self, self.time_step)
 
     def run(self):
-        #self.singleMovemement = MoveRoutine(self.time_step, self)
+        self.singleMovemement = MoveRoutine(self.time_step, self)
         print("Test in opponent")
-        while self.step(self.time_step) != -1:
-            right, left = self.sonar.get_new_averages()
-            print("r: " + str(right) + " l: " + str(left))
-        
-        #self.singleMovemement.exec()
+
+        self.singleMovemement.exec()
+
         # motion = Motion('../motions/GetUp2.motion')  # look into this text file, it's easy to understand
         # motion.setLoop(True)
         # motion.play()
         # time_step = int(self.getBasicTimeStep())  # retrieves the WorldInfo.basicTimeTime (ms) from the world file
-        # while self.step(time_step) != -1:  # runs the hand wave motion in a loop until Webots quits
+        # while self.step(self.time_step) != -1:  # runs the hand wave motion in a loop until Webots quits
         #     pass
 
 

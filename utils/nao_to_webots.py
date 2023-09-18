@@ -6,6 +6,7 @@ import os
 from py_motions import movements
 from py_motions import ghoul
 from py_motions import ghoulUp
+from py_motions import gen_up
 # NOTE: You need to import the wanted file e.g. pick_up.py
 
 def convert_time_array(arr):
@@ -26,14 +27,13 @@ def convert_time_to_webots_time(time, pose):
 
     return '00:' + ("%02d" % (sec,)) + ':' + ("%03d" % (milisec,)) + ',' + ('Pose%d' % pose)
 
-# all_names, all_times, all_keys = ghoul.ghoul2() # NOTE: Python function should be called here!
-all_names, all_times, all_keys = ghoulUp.ghoulUp() # NOTE: Python function should be called here!
+all_names, all_times, all_keys = gen_up.gen_up() # NOTE: Python function should be called here!
 
 first_row = ['#WEBOTS_MOTION','V1.0'] + all_names
 
 if __name__ == "__main__":
     path = "controllers/motions"
-    motion = os.path.join(path, "GhoulUp.motion") # Write file directly to motions directory
+    motion = os.path.join(path, "GenUp.motion") # Write file directly to motions directory
     time_set = set()
     with open(motion, 'w', encoding='UTF8', newline='') as f:
         writer = csv.writer(f)
@@ -65,10 +65,6 @@ if __name__ == "__main__":
         writer.writerows(out_csv)
                 
 
-
-
-
-
 """
 def replace_string(text, to_replace, replacement):
     # Use the replace method to replace 'to_replace' with 'replacement'
@@ -80,6 +76,5 @@ def replace_string(text, to_replace, replacement):
 
 n = "times.append([0, 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0])"
 r = "times.append([0, 0.16, 0.24, 0.32, 0.4, 0.48, 0.56, 0.64, 0.72, 0.8, 0.88])"
-
 
 """
