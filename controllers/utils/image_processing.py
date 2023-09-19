@@ -67,11 +67,15 @@ class ImageProcessing():
         red_contours, _ = cv2.findContours(r, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
         if (blue_contours == None):
-            return None, None, None, None
+            return None, None, None, None, None
         
         # find largest contour
         contours, _ = cv2.findContours(gray, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         contours = sorted(contours, key=cv2.contourArea, reverse=True)
+
+        if (len(contours) == 0):
+            return None, None, None, None, None
+
         largest_contour = contours[0]
         x_min = color_image.shape[0]
         x_max = 0
@@ -102,7 +106,7 @@ class ImageProcessing():
                 break
 
         if not flag:
-            return None, None, None, None
+            return None, None, None, None, None
 
         # get bounding box
         x,y,w,h = cv2.boundingRect(largest_contour)
@@ -110,12 +114,16 @@ class ImageProcessing():
 
         # ignore small blobs
         if (area < 1000):
-            return None, None, None, None
+            return None, None, None, None, None
         
         color_image = cv2.rectangle(color_image,(x_min,y),(x_max,y+h),(255,0,0),2)
 
+        # Show image
+        # cv2.imshow("Image", color_image)
+        # cv2.waitKey(1)
+
         # return bounding box
-        return x_min, x_max, y, y+h
+        return x_min, x_max, y, y+h, area
     
     @staticmethod
     def getRingBox(self, img):
@@ -131,7 +139,7 @@ class ImageProcessing():
         upper = np.array([29, 76, 255])
 
         # rotate image according to roll
-        img = ndimage.rotate(img, roll) 
+        # img = ndimage.rotate(img, -roll) 
 
         # find contours
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -143,7 +151,7 @@ class ImageProcessing():
             y = 0
             w = 0
             print('0')
-            return 0
+            return 0,0,0,0,0
         else:
             largest_contour = contours[0]
 
@@ -166,8 +174,15 @@ class ImageProcessing():
         
             #print(roll,"\t\t",h,"/",img.shape[1])
 
+        image = cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),2)
+
+        # Show image
+        cv2.imshow("Image", image)
+        cv2.waitKey(1)
+
+
         # return bounding box
-        return x,y,w,h
+        return x,y,w,h,1
     
     @staticmethod
     def get_largest_contour(image):

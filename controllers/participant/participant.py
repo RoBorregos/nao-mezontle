@@ -43,7 +43,9 @@ class RoBorregos (Robot):
         self.gait_manager = GaitManager(self, self.time_step)
         self.heading_angle = 3.14 / 2
         self.PE = PoseEstimator(self, self.time_step)
-        
+        self.starting_color = 'blue'
+        self.last_seen = None
+
         
         # Time before changing direction to stop the robot from falling off the ring
         self.counter = 0
@@ -51,11 +53,6 @@ class RoBorregos (Robot):
     def run(self):
         while self.step(self.time_step) != -1:
             # We need to update the internal theta value of the gait manager at every step:
-
-            
-
-            #self.getRingThreshold(self.camera.get_image())
-            
             t = self.getTime()
             self.gait_manager.update_theta()
             if 0.3 < t < 1:
@@ -64,30 +61,28 @@ class RoBorregos (Robot):
                 self.fall_detector.check()
                 self.stay_in_zone()
                 #self.walk()
-            
-            
-    
-
-
     def stay_in_zone(self):
         side_max = 80
         side_mid = 48
         side_min = 10
         diagonal_max = 90
 
-        x,y,w,height = IP.getRingBox(self,self.camera.get_image())
+        x,y,w,height,ringstatus = IP.getRingBox(self,self.camera.get_image())
 
         img = self.camera.get_image()
-        horizontal_coordinate,w,_,_ = IP.nao_detection(img)
+        horizontal_coordinate,w,_,_,_ = IP.nao_detection(img, starting_color=self.starting_color)
         
-  
-        print(x)
-                        
-        if height < 5:
+
+
+        if horizontal_coordinate is not None:
+            self.last_seen = horizontal_coordinate
+        
+        
+        if ringstatus and height < 5:
             #pa tras
             self.gait_manager.command_to_motors(desired_radius=0, heading_angle=3.14159) 
         
-        elif height > 60:
+        elif ringstatus and height > 60:
             #pa delante
             self.gait_manager.command_to_motors(desired_radius=0, heading_angle=0)
                 
@@ -95,21 +90,45 @@ class RoBorregos (Robot):
             #buscar
             if horizontal_coordinate is None:
                 print("No opponent found")
-                self.gait_manager.command_to_motors(desired_radius=0.1, heading_angle=self.heading_angle)
+
+                # Girar hacia el último lado que se vio.
+                if self.last_seen is None:
+                    self.gait_manager.command_to_motors(desired_radius=0.1, heading_angle=self.heading_angle)
+                elif self.last_seen < img.shape[1]/2:
+                    self.gait_manager.command_to_motors(desired_radius=0, heading_angle=3.14159)
+                else:
+                    self.gait_manager.command_to_motors(desired_radius=0, heading_angle=0)
+                    
             
             #atacarrr
             else:
                 print("Opponent found")
                 self.walk()
-            
-            
+         
 
-        
+    # Find out current robot's color.
+    def get_robot_color(self):
+        hc_blue = None
+        hc_red = None
+        while hc_blue is None and hc_red is None:
+            img = self.camera.get_image()
+            hc_blue,_,_,_,a_blue = IP.nao_detection(img, starting_color='blue')
+            hc_red,_,_,_,a_red = IP.nao_detection(img, starting_color='red')
 
+        if hc_blue is None:
+            self.starting_color = 'red'
+        elif hc_red is not None:
+            if a_blue > a_red:
+                self.starting_color = 'blue'
+            else:
+                self.starting_color = 'red'
+        elif hc_red is None:
+            self.starting_color = 'blue'
 
 
     def start_sequence(self):
         """At the beginning of the match, the robot walks forwards to move away from the edges."""
+        self.get_robot_color()
         #self.gait_manager.command_to_motors(heading_angle=0)
 
     def walk(self):
@@ -137,7 +156,7 @@ class RoBorregos (Robot):
         """Locate the opponent in the image and return its horizontal position in the range [-1, 1]."""
         img = self.camera.get_image()
         
-        horizontal_coordinate,w,_,_ = IP.nao_detection(img)
+        horizontal_coordinate,w,_,_,_ = IP.nao_detection(img)
         
 
         if horizontal_coordinate is None:
