@@ -18,18 +18,23 @@ This module provides functions to work with images coming from the NAO's cameras
 
 import numpy as np
 import cv2
+import math as Math
+from scipy import ndimage
+
+
 
 
 class ImageProcessing():
 
     @staticmethod
-    def color_detection(image, starting_color='red'):
+    def nao_detection(image, starting_color='red'):
 
+        # detect colors
         hsv_img = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
-        #0-179, 0-255 and 0-255 Hue, saturation, value
-        bounds_blue = [(100, 100, 80),(120, 255, 255)]
-        bounds_white = [(20, 5, 200),(120, 50, 240)]
+        # 0-179, 0-255 and 0-255 Hue, saturation, value
+        bounds_blue = [(100, 150, 80),(120, 255, 220)]
+        bounds_white = [(20, 5, 200),(120, 50, 230)]
         bounds_red = [(170, 140, 140),(179, 255, 255)]
 
         mask_blue = cv2.inRange(hsv_img, bounds_blue[0], bounds_blue[1])
@@ -40,21 +45,18 @@ class ImageProcessing():
         mask_white = np.array(mask_white)
         mask_red = np.array(mask_red)
 
-
         masked_blue = cv2.bitwise_and(image, image, mask=mask_blue)
         masked_white = cv2.bitwise_and(image, image, mask=mask_white)
         masked_red = cv2.bitwise_and(image, image, mask=mask_red)
 
+        # find opponent color and white areas to make mask
         if (starting_color == 'red'):
             color_image = cv2.bitwise_or(masked_blue, masked_white)
         else:
             color_image = cv2.bitwise_or(masked_red, masked_white)
 
-        
-
+        # add filters
         blur = cv2.GaussianBlur(color_image, (0, 0), 3)
-        #cv2.imwrite(os.path.join(results_dir, file), blur)
-
         gray = cv2.cvtColor(blur, cv2.COLOR_BGR2GRAY)
 
         b = cv2.cvtColor(masked_blue, cv2.COLOR_BGR2GRAY)
@@ -66,6 +68,8 @@ class ImageProcessing():
 
         if (blue_contours == None):
             return None, None, None, None
+        
+        # find largest contour
         contours, _ = cv2.findContours(gray, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         contours = sorted(contours, key=cv2.contourArea, reverse=True)
         largest_contour = contours[0]
@@ -79,7 +83,7 @@ class ImageProcessing():
             color_contours = red_contours
 
         
-
+        # find largest contour that contains the opposing color (avoidng only white blobs)
         for cont in contours:
             x,y,w,h = cv2.boundingRect(cont)
             xf = x + w
@@ -100,12 +104,70 @@ class ImageProcessing():
         if not flag:
             return None, None, None, None
 
-  
-
+        # get bounding box
         x,y,w,h = cv2.boundingRect(largest_contour)
-        #cv2.drawContours(color_image,contours[0],-1,(0,0,205),2,cv2.LINE_AA)
+        area = cv2.contourArea(largest_contour)
+
+        # ignore small blobs
+        if (area < 1000):
+            return None, None, None, None
+        
         color_image = cv2.rectangle(color_image,(x_min,y),(x_max,y+h),(255,0,0),2)
+
+        # return bounding box
         return x_min, x_max, y, y+h
+    
+    @staticmethod
+    def getRingBox(self, img):
+
+        # use angles 
+        roll,_,yaw = self.PE.get_roll_pitch_yaw()
+        yaw = yaw * 180 / Math.pi * -1
+        roll = roll * 180 / Math.pi
+        #print(yaw)
+        
+        # define color range
+        lower = np.array([17, 61, 189])
+        upper = np.array([29, 76, 255])
+
+        # rotate image according to roll
+        img = ndimage.rotate(img, roll) 
+
+        # find contours
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        mask = cv2.inRange(hsv, lower, upper)
+        contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        contours = sorted(contours, key=cv2.contourArea, reverse=True)
+
+        if len(contours) == 0:
+            y = 0
+            w = 0
+            print('0')
+            return 0
+        else:
+            largest_contour = contours[0]
+
+            # #fitted line
+            # rows,cols = img.shape[:2]
+            # [vx,vy,x,y] = cv2.fitLine(largest_contour, cv2.DIST_L2,0,0.01,0.01)
+            # lefty = int((-x*vy/vx) + y)
+            # righty = int(((cols-x)*vy/vx)+y)
+            # cv2.line(img,(cols-1,righty),(0,lefty),(0,255,0),2)
+            
+            # #rotated rectangle
+            # rect = cv2.minAreaRect(largest_contour)
+            # box = cv2.boxPoints(rect)
+            # print(box)
+            # box = np.intp(box)
+            # cv2.drawContours(img,[box],0,(0,0,255),2)
+
+            #normal bounding box
+            x,y,w,h = cv2.boundingRect(largest_contour)
+        
+            #print(roll,"\t\t",h,"/",img.shape[1])
+
+        # return bounding box
+        return x,y,w,h
     
     @staticmethod
     def get_largest_contour(image):
