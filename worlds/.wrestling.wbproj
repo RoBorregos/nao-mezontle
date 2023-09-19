@@ -11,4 +11,4 @@ consoles: Console:All:All
 renderingDevicePerspectives: opponent:CameraBottom;1;0.383325;0.814819;0.832808
 renderingDevicePerspectives: opponent:CameraTop;0;0.443273;0.786773;0
 renderingDevicePerspectives: participant:CameraBottom;1;0.426392;0;0.832808
-renderingDevicePerspectives: participant:CameraTop;1;1.51667;0;0.719879
+renderingDevicePerspectives: participant:CameraTop;1;0.991769;0;0.719879
