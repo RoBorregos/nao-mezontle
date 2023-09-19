@@ -18,7 +18,7 @@ from .accelerometer import Accelerometer
 from .motion_library import MotionLibrary
 from .finite_state_machine import FiniteStateMachine
 from .current_motion_manager import CurrentMotionManager
-
+import time
 
 class FallDetection:
     def __init__(self, time_step, robot):
@@ -43,6 +43,10 @@ class FallDetection:
         self.current_motion = CurrentMotionManager()
         self.library = MotionLibrary()
 
+        self.last_state = None
+        self.last_change = time.time()
+        self.WATCHDOG_TIMEOUT = 4
+
     def check(self):
         '''Check if the robot has fallen.
         If that is the case, block everything to recover from it.'''
@@ -52,7 +56,16 @@ class FallDetection:
                 self.fsm.execute_action()
                 self.robot.step(self.time_step)
                 self.detect_fall()
-
+                # Add timeout to avoid infinite loop.
+                if self.fsm.current_state != self.last_state:
+                    self.last_change = time.time()
+                
+                if time.time() - self.last_change > self.WATCHDOG_TIMEOUT:
+                    self.fsm.transition_to('NO_FALL')
+                    break
+                
+                self.last_state = self.fsm.current_state
+                
     def detect_fall(self):
         '''Detect a fall from the accelerometer and update the FSM state.'''
         self.accelerometer.update_average()

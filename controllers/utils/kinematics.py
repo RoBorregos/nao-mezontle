@@ -26,6 +26,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation as R
 
 
+VERBOSE = False
 class Node:
     '''A node in the tree data structure for storing all the possible inverse kinematics solutions.'''
 
@@ -242,11 +243,13 @@ class Kinematics:
         combinations = solution_tree_root.get_angle_combinations()
         combinations = [candidate for candidate in combinations if len(candidate) == 6]
         if len(combinations) == 0 or len(combinations[0]) != 6:
-            print(f'WARNING: Incomputable desired end point position for the {"left" if is_left else "right"} leg:')
-            print(f'x: {x}, y: {y}, z: {z}, roll: {roll}, pitch: {pitch}, yaw: {yaw}')
+            if VERBOSE:
+                print(f'WARNING: Incomputable desired end point position for the {"left" if is_left else "right"} leg:')
+                print(f'x: {x}, y: {y}, z: {z}, roll: {roll}, pitch: {pitch}, yaw: {yaw}')
             best_solution = left_leg_previous_joints if is_left else right_leg_previous_joints
         elif len(combinations) != 1:
-            print('Number of combination different than one:', combinations)
+            if VERBOSE:
+                print('Number of combination different than one:', combinations)
             # compute the distance between the different combinations and the previous joints and return the closest one
             shortest_distance = np.Inf
             best_index = -1
