@@ -63,6 +63,8 @@ class RoBorregos (Robot):
                 self.stay_in_zone()
 
     def stay_in_zone(self):
+
+                
         side_max = 80
         side_mid = 48
         side_min = 10
@@ -134,7 +136,46 @@ class RoBorregos (Robot):
         self.get_robot_color()
 
         self.headMotor = self.getDevice(f'HeadPitch')
-        self.headMotor.setPosition(0.50)
+        self.headMotor.setPosition(0.40)
+
+        self.safe_position()
+        
+    def safe_position(self):
+        hip_pitch = -1.6
+        ankle_pitch = -0.6
+        knee_pitch = 1.8
+        hip_roll = 0.2
+        ankle_roll = -0.39
+
+        # self.LhipRoll = self.getDevice(f'LHipRoll')
+        # self.LhipRoll.setPosition(hip_roll)
+        
+        # self.RhipRoll = self.getDevice(f'RHipRoll')
+        # self.RhipRoll.setPosition(-hip_roll)
+
+        # self.LankleRoll = self.getDevice(f'LAnkleRoll')
+        # self.LankleRoll.setPosition(ankle_roll)
+
+        # self.RankleRoll = self.getDevice(f'RAnkleRoll')
+        # self.RankleRoll.setPosition(-ankle_roll)
+
+        self.LhipPitch = self.getDevice(f'LHipPitch')
+        self.LhipPitch.setPosition(hip_pitch)
+
+        self.RhipPitch = self.getDevice(f'RHipPitch')
+        self.RhipPitch.setPosition(hip_pitch)
+
+        self.LKneePitch = self.getDevice(f'LKneePitch')
+        self.LKneePitch.setPosition(knee_pitch)
+
+        self.RKneePitch = self.getDevice(f'RKneePitch')
+        self.RKneePitch.setPosition(knee_pitch)
+
+        self.LAnklePitch = self.getDevice(f'LAnklePitch')
+        self.LAnklePitch.setPosition(ankle_pitch)
+
+        self.RAnklePitch = self.getDevice(f'RAnklePitch')
+        self.RAnklePitch.setPosition(ankle_pitch)
 
     def walk(self):
         """Walk towards the opponent like a homing missile."""
