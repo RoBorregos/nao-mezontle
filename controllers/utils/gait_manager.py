@@ -37,7 +37,6 @@ class GaitManager():
             position_sensor = motor.getPositionSensor()
             position_sensor.enable(time_step)
             self.R_leg_motors.append(motor)
-
     def update_theta(self):
         self.gait_generator.update_theta()
 
@@ -60,3 +59,4 @@ class GaitManager():
         left_target_commands = self.kinematics.inverse_leg(x * 1e3, y * 1e3, z * 1e3, 0, 0, yaw, is_left=True)
         for command, motor in zip(left_target_commands, self.L_leg_motors):
             motor.setPosition(command)
+
