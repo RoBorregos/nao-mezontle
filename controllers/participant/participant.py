@@ -28,6 +28,7 @@ from utils.camera import Camera
 from utils.pose_estimator import PoseEstimator
 import cv2
 import numpy as np
+import time
 
 class RoBorregos (Robot):
     SMALLEST_TURNING_RADIUS = 0.1
@@ -60,7 +61,7 @@ class RoBorregos (Robot):
             elif t > 1:
                 self.fall_detector.check()
                 self.stay_in_zone()
-                #self.walk()
+
     def stay_in_zone(self):
         side_max = 80
         side_mid = 48
@@ -72,25 +73,24 @@ class RoBorregos (Robot):
         img = self.camera.get_image()
         horizontal_coordinate,w,_,_,_ = IP.nao_detection(img, starting_color=self.starting_color)
         
-
-
         if horizontal_coordinate is not None:
             self.last_seen = horizontal_coordinate
         
-        
-        if ringstatus and height < 5:
-            #pa tras
+        if not ringstatus or height < 5:
+            # Prevenir Salirse del Ring.
+            print("Backwards")
             self.gait_manager.command_to_motors(desired_radius=0, heading_angle=3.14159) 
-        
-        elif ringstatus and height > 60:
-            #pa delante
-            self.gait_manager.command_to_motors(desired_radius=0, heading_angle=0)
+        # TO-DO: Considerar el caso de acercase al centro del ring.    
+        # elif height > 80:
+        #     #pa delante
+        #     print("Forward")
+        #     self.gait_manager.command_to_motors(desired_radius=0, heading_angle=0)
                 
         else:
-            #buscar
+            # Buscar al oponente.
             if horizontal_coordinate is None:
-                print("No opponent found")
 
+                print("Search")
                 # Girar hacia el último lado que se vio.
                 if self.last_seen is None:
                     self.gait_manager.command_to_motors(desired_radius=0.1, heading_angle=self.heading_angle)
@@ -99,10 +99,9 @@ class RoBorregos (Robot):
                 else:
                     self.gait_manager.command_to_motors(desired_radius=0, heading_angle=0)
                     
-            
-            #atacarrr
+            # Atacar al oponente.
             else:
-                print("Opponent found")
+                print("Attack")
                 self.walk()
          
 
@@ -110,10 +109,14 @@ class RoBorregos (Robot):
     def get_robot_color(self):
         hc_blue = None
         hc_red = None
-        while hc_blue is None and hc_red is None:
+        start_time = time.time()
+        while hc_blue is None and hc_red is None and time.time() - start_time < 3:
             img = self.camera.get_image()
             hc_blue,_,_,_,a_blue = IP.nao_detection(img, starting_color='blue')
             hc_red,_,_,_,a_red = IP.nao_detection(img, starting_color='red')
+
+        if hc_blue is None and hc_red is None:
+            self.starting_color = 'red'
 
         if hc_blue is None:
             self.starting_color = 'red'
@@ -129,7 +132,9 @@ class RoBorregos (Robot):
     def start_sequence(self):
         """At the beginning of the match, the robot walks forwards to move away from the edges."""
         self.get_robot_color()
-        #self.gait_manager.command_to_motors(heading_angle=0)
+
+        self.headMotor = self.getDevice(f'HeadPitch')
+        self.headMotor.setPosition(0.50)
 
     def walk(self):
         """Walk towards the opponent like a homing missile."""
@@ -146,18 +151,13 @@ class RoBorregos (Robot):
             self.heading_angle = - self.heading_angle
             self.counter = 0
         self.counter += 1
-        self.gait_manager.command_to_motors(desired_radius=desired_radius, heading_angle=0)
+        self.gait_manager.command_to_motors(desired_radius=desired_radius, heading_angle=0)   
 
-    
-
-
-    
     def _get_normalized_opponent_x(self):
         """Locate the opponent in the image and return its horizontal position in the range [-1, 1]."""
         img = self.camera.get_image()
         
-        horizontal_coordinate,w,_,_,_ = IP.nao_detection(img)
-        
+        horizontal_coordinate,w,_,_,_ = IP.nao_detection(img) 
 
         if horizontal_coordinate is None:
             return 0

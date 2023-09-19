@@ -150,7 +150,6 @@ class ImageProcessing():
         if len(contours) == 0:
             y = 0
             w = 0
-            print('0')
             return 0,0,0,0,0
         else:
             largest_contour = contours[0]
@@ -171,7 +170,13 @@ class ImageProcessing():
 
             #normal bounding box
             x,y,w,h = cv2.boundingRect(largest_contour)
-        
+            area = cv2.contourArea(largest_contour)
+            
+            # ignore small blobs
+            # print("Area: ", area)
+            if (area < 100):
+                return 0,0,0,0,0
+
             #print(roll,"\t\t",h,"/",img.shape[1])
 
         image = cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),2)

@@ -37,9 +37,6 @@ class GaitManager():
             position_sensor = motor.getPositionSensor()
             position_sensor.enable(time_step)
             self.R_leg_motors.append(motor)
-        
-        self.headMotor = robot.getDevice(f'HeadPitch')
-
     def update_theta(self):
         self.gait_generator.update_theta()
 
@@ -63,4 +60,3 @@ class GaitManager():
         for command, motor in zip(left_target_commands, self.L_leg_motors):
             motor.setPosition(command)
 
-        self.headMotor.setPosition(0.35)
