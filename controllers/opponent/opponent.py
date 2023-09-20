@@ -18,12 +18,14 @@ Demonstrates the gait manager (inverse kinematics + simple ellipsoid path).
 
 from controller import Robot
 import sys
+import time
 sys.path.append('..')
 # Eve's locate_opponent() is implemented in this module:
 from utils.image_processing import ImageProcessing as IP
 from utils.fall_detection import FallDetection
 from utils.gait_manager import GaitManager
 from utils.camera import Camera
+from utils.log_position import LogPosition
 
 
 class RoBorregos (Robot):
@@ -38,20 +40,34 @@ class RoBorregos (Robot):
         self.camera = Camera(self)
         self.fall_detector = FallDetection(self.time_step, self)
         self.gait_manager = GaitManager(self, self.time_step)
+        self.logPosition = LogPosition(self, self.time_step)
         self.heading_angle = 3.14 / 2
         # Time before changing direction to stop the robot from falling off the ring
         self.counter = 0
 
+    # Run for pose logging
     def run(self):
-        while self.step(self.time_step) != -1:
-            # We need to update the internal theta value of the gait manager at every step:
-            t = self.getTime()
-            self.gait_manager.update_theta()
-            if 0.3 < t < 2:
-                self.start_sequence()
-            elif t > 2:
-                self.fall_detector.check()
-                self.walk()
+        # self.singleMovemement = MoveRoutine(self.time_step, self)
+        print("Test in opponent")
+
+        log_time = time.time()
+        log_time_difference = 0.1
+        while self.step(self.time_step) != -1:  # runs the hand wave motion in a loop until Webots quits
+            if time.time() - log_time > log_time_difference:
+                log_time = time.time()
+                self.logPosition.log_position()
+                
+    # Run for walking
+    # def run(self):
+    #     while self.step(self.time_step) != -1:
+    #         # We need to update the internal theta value of the gait manager at every step:
+    #         t = self.getTime()
+    #         self.gait_manager.update_theta()
+    #         if 0.3 < t < 2:
+    #             self.start_sequence()
+    #         elif t > 2:
+    #             self.fall_detector.check()
+    #             self.walk()
 
     def start_sequence(self):
         """At the beginning of the match, the robot walks forwards to move away from the edges."""
