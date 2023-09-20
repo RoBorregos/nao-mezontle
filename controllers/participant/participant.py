@@ -32,7 +32,7 @@ import cv2
 import numpy as np
 import time
 
-GHOUL_READY = False
+GHOUL_READY = True
 PUNCH_READY = False
 
 class RoBorregos (Robot):
@@ -197,7 +197,7 @@ class RoBorregos (Robot):
         
         if GHOUL_READY:
             motion = Motion('../motions/Ghoul3.motion')  # look into this text file, it's easy to understand
-            motion.setLoop(True)
+            motion.setLoop(False)
             motion.play()
 
             
@@ -205,7 +205,7 @@ class RoBorregos (Robot):
             while self.step(self.time_step) != -1 and time.time() - start_time < 1.6:
                 pass
             
-            motion = Motion('../motions/GhoulUp.motion')  # look into this text file, it's easy to understand
+            #motion = Motion('../motions/GetUpFront.motion')  # look into this text file, it's easy to understand
             motion.setLoop(False)
             motion.play()
 
