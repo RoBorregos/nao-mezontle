@@ -40,22 +40,13 @@ class RoBorregos (Robot):
         self.camera = Camera(self)
         self.fall_detector = FallDetection(self.time_step, self)
         self.gait_manager = GaitManager(self, self.time_step)
-        self.logPosition = LogPosition(self, self.time_step)
+        # log_groups = [knees, ankles, hip, shoulders, arms, hands, head], 1 to log, 0 to ignore
+        self.logPosition = LogPosition(self, self.time_step, log_groups=[1, 0, 0, 0, 0, 1, 0])
+        self.logPosition.log_header()
         self.heading_angle = 3.14 / 2
         # Time before changing direction to stop the robot from falling off the ring
         self.counter = 0
 
-    # Run for pose logging
-    def run(self):
-        # self.singleMovemement = MoveRoutine(self.time_step, self)
-        print("Test in opponent")
-
-        log_time = time.time()
-        log_time_difference = 0.1
-        while self.step(self.time_step) != -1:  # runs the hand wave motion in a loop until Webots quits
-            if time.time() - log_time > log_time_difference:
-                log_time = time.time()
-                self.logPosition.log_position()
                 
     # Run for walking
     # def run(self):
@@ -68,6 +59,18 @@ class RoBorregos (Robot):
     #         elif t > 2:
     #             self.fall_detector.check()
     #             self.walk()
+
+    # Run for pose logging
+    def run(self):
+        # self.singleMovemement = MoveRoutine(self.time_step, self)
+        print("Test in opponent")
+
+        log_time = time.time()
+        log_time_difference = 0.1
+        while self.step(self.time_step) != -1:  # runs the hand wave motion in a loop until Webots quits
+            if time.time() - log_time > log_time_difference:
+                log_time = time.time()
+                self.logPosition.log_position()
 
     def start_sequence(self):
         """At the beginning of the match, the robot walks forwards to move away from the edges."""
