@@ -27,13 +27,17 @@ from utils.image_processing import ImageProcessing as IP
 from utils.fall_detection import FallDetection
 from utils.gait_manager import GaitManager
 from utils.camera import Camera
+from utils.motion_library import MotionLibrary
 from utils.pose_estimator import PoseEstimator
+from utils.current_motion_manager import CurrentMotionManager
+from utils.behaviours import Behaviours
 import cv2
 import numpy as np
 import time
 
-GHOUL_READY = True
-PUNCH_READY = False
+
+GHOUL_READY = False
+PUNCH_READY = True
 
 class RoBorregos (Robot):
     SMALLEST_TURNING_RADIUS = 0.1
@@ -48,6 +52,9 @@ class RoBorregos (Robot):
         self.camera = Camera(self)
         self.fall_detector = FallDetection(self.time_step, self)
         self.gait_manager = GaitManager(self, self.time_step)
+        self.behaviours = Behaviours(self, self.time_step)
+        self.current_motion = CurrentMotionManager()
+        self.library = MotionLibrary()
         self.heading_angle = 3.14 / 2
         self.PE = PoseEstimator(self, self.time_step)
         self.starting_color = 'blue'
@@ -64,11 +71,12 @@ class RoBorregos (Robot):
         self.counter = 0
 
     def run(self):
+
         while self.step(self.time_step) != -1:
             # We need to update the internal theta value of the gait manager at every step:
             t = self.getTime()
             self.gait_manager.update_theta()
-            if 0.3 < t < 1:
+            if 0.3 < t < 0.5:
                 self.start_sequence()
             elif t > 1:
                 self.fall_detector.check()
@@ -90,11 +98,24 @@ class RoBorregos (Robot):
             return False
 
         print("Sonar: ", self.sonar.get_new_averages()[0])
-        if area > 15000 or self.sonar.get_new_averages()[0] < 0.26:
+        print("Area:", area)
+        print("Width:", w)
+        print("Diff:", w - horizontal_coordinate)
+        if area > 10000 and self.sonar.get_new_averages()[0] < 0.26 or w - horizontal_coordinate > 100:
             return True
         return False
 
     def stay_in_zone(self):
+        # self.current_motion.play_sync(self.library.get('ArmsUp'), self, self.time_step)
+        # self.current_motion.play_sync(self.library.get('SafePosition'), self, self.time_step)
+        # self.behaviours.safe_position()
+        # print("Punch sequence")
+        # self.behaviours.punch_position_legs()
+        # while self.step(self.time_step) != -1:
+        #     pass
+        #     self.current_motion.play_sync(self.library.get('ArmsUp'), self, self.time_step)
+
+
         side_max = 80
         side_mid = 48
         side_min = 10
@@ -145,21 +166,23 @@ class RoBorregos (Robot):
                 self.current_handle = self.handle_state_change('attack')
                 if self.current_handle:
                     print("Attacking...")
-                    
-
                     if  self.is_nao_near() and PUNCH_READY:
-                        print("Motion started")
-                        motion = Motion('../motions/test.motion')  # look into this text file, it's easy to understand
-                        motion.setLoop(True)
-                        motion.play()
-
+                        # self.behaviours.safe_position()
+                        # self.current_motion.play_sync(self.library.get('SafePosition'), self, self.time_step)
+                        print("Punch sequence")
+                        # self.behaviours.punch_position_legs()
                         while self.step(self.time_step) != -1:
-                            if not self.is_nao_near():
-                                motion.stop()
-                                return
                             if self.fall_detector.check():
-                                motion.stop()
-                                return
+                                print("Fallen")
+                                break
+                            if self.is_nao_near(): 
+                                self.current_motion.play_sync(self.library.get('ArmsUp2'), self, self.time_step)
+                            else:
+                                print("Nao not near")
+                                break
+
+                        # self.current_motion.play_sync(self.library.get('SafePosition'), self, self.time_step)
+
 
                     self.walk()
 
@@ -222,7 +245,7 @@ class RoBorregos (Robot):
 
     def walk(self):
         """Walk towards the opponent like a homing missile."""
-        
+        self.behaviours.base_position()
 
         normalized_x = self._get_normalized_opponent_x()
         #print(normalized_x)
