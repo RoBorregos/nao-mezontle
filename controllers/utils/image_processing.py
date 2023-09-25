@@ -182,8 +182,8 @@ class ImageProcessing():
         image = cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),2)
 
         # Show image
-        cv2.imshow("Image", image)
-        cv2.waitKey(1)
+        #cv2.imshow("Image", image)
+        #cv2.waitKey(1)
 
 
         # return bounding box
@@ -224,8 +224,8 @@ class ImageProcessing():
         # the binary image is then dilated to merge small groups of blobs together
         closing = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (15, 15)))
         # Visualize closing image
-        cv2.imshow('closing', closing)
-        cv2.waitKey(1)
+        #cv2.imshow('closing', closing)
+        #cv2.waitKey(1)
 
         # the robot is assumed to be the largest contour
         largest_contour = cls.get_largest_contour(closing)
@@ -235,7 +235,7 @@ class ImageProcessing():
             img = cv2.line(img, (vertical_coordinate-50,horizontal_coordinate), (vertical_coordinate+50,horizontal_coordinate), color=(250, 250, 0), thickness=3)
             img = cv2.line(img, (vertical_coordinate,horizontal_coordinate-50), (vertical_coordinate,horizontal_coordinate+50), color=(250, 250, 0), thickness=3)
             img = cv2.circle(img, (vertical_coordinate,horizontal_coordinate), 40, (0,0,250), 5)
-            cv2.imshow('mask', img)
+            #cv2.imshow('mask', img)
             return largest_contour, vertical_coordinate, horizontal_coordinate
         else:
             # if no contour is found, we return None

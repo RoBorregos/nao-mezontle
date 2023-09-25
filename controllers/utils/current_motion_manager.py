@@ -26,9 +26,7 @@ class CurrentMotionManager:
 
     def set(self, motion):
         """Sets the current motion to the given motion."""
-        if self.currentMotion:
-            self.currentMotion.stop()
-            self._reset_is_over_flag(self.currentMotion)
+        self.abort_current_motion()
         self.currentMotion = motion
         motion.play()
 
@@ -36,3 +34,15 @@ class CurrentMotionManager:
         """Resets Webots' isOver() flag of the given motion."""
         motion.play()
         motion.stop()
+
+    def play_sync(self, motion, robot, time_step):
+        """Plays the given motion synchronously. BLOCKING, only for testing purposes."""
+        self.set(motion)
+        while not motion.isOver() and robot.step(time_step) != -1:
+            pass
+        motion.stop()
+    
+    def abort_current_motion(self):
+        if self.currentMotion:
+            self.currentMotion.stop()
+            self._reset_is_over_flag(self.currentMotion)
