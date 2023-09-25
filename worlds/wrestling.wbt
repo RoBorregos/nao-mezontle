@@ -67,8 +67,19 @@ RubberDuck {
   rotation 0 0 1 1.5707996938995747
   name "rubber duck 2"
 }
+#DEF WRESTLER_RED Nao {
+#  translation -0.88 0 0.384
+#  name "participant"
+#  controller "participant"
+#  window "competition_description"
+#  supervisor TRUE
+#  synchronization FALSE
+#  selfCollision TRUE
+#}
+# Start in floog position
 DEF WRESTLER_RED Nao {
-  translation -0.88 0 0.384
+  translation -0.53 0 0.1068
+  rotation 0 -1 0 1.5708
   name "participant"
   controller "participant"
   window "competition_description"

@@ -44,9 +44,9 @@ def convert_motion_file(input_file):
 if __name__ == '__main__':
     # Run the script to generate the motion file
     # print(os.getcwd())
-    input_file = "./nao-mezontle/controllers/motions/ArmsUp.motion"
+    input_file = "./nao-mezontle/controllers/motions/BackFast.motion"
     # input_file = "./controllers/motions/FastForward.motion"
-    name = "ArmsUp"
+    name = "back_fast"
     names, times, keys = convert_motion_file(input_file)
     
     all_text = f"def {name}():\n"
