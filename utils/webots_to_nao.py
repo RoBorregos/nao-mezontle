@@ -3,7 +3,7 @@ File to transform .motion files to "nao format" (format given by choregraphe), w
 create motions in webots using nao_to_webots.
 """
 
-import os
+import os, pyperclip
 
 def convert_motion_file(input_file):
     names = []
@@ -44,11 +44,10 @@ def convert_motion_file(input_file):
 if __name__ == '__main__':
     # Run the script to generate the motion file
     # print(os.getcwd())
-    # input_file = "./controllers/motions/ArmsUp.motion"
-    input_file = "./controllers/motions/FastForward.motion"
+    input_file = "./nao-mezontle/controllers/motions/ArmsUp.motion"
+    # input_file = "./controllers/motions/FastForward.motion"
     name = "ArmsUp"
     names, times, keys = convert_motion_file(input_file)
-
     
     all_text = f"def {name}():\n"
     all_text += "\tnames = list()\n"
@@ -64,7 +63,10 @@ if __name__ == '__main__':
     # Print the generated lists
     for i in range(len(names)):
         all_text += f"\tnames.append(\"{names[i]}\")\n"
-        all_text += f"\times.append(times_v)\n"
-        all_text += f"\tkeys.append(\"{keys[i]}\")\n\n"
+        all_text += f"\ttimes.append(times_v)\n"
+        all_text += f"\tkeys.append({keys[i]})\n\n"
+    
+    all_text += f"\n\treturn names, times, keys\n\n"
 
+    pyperclip.copy(all_text)
     print(all_text)
