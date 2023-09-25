@@ -32,7 +32,7 @@ import cv2
 import numpy as np
 import time
 
-GHOUL_READY = True
+GHOUL_READY = False
 PUNCH_READY = False
 
 class RoBorregos (Robot):
@@ -68,9 +68,9 @@ class RoBorregos (Robot):
             # We need to update the internal theta value of the gait manager at every step:
             t = self.getTime()
             self.gait_manager.update_theta()
-            if 0.3 < t < 1.6:
+            if 0.3 < t < 1:
                 self.start_sequence()
-            elif t > 1.6:
+            elif t > 1:
                 self.fall_detector.check()
                 self.stay_in_zone()
 
@@ -259,4 +259,4 @@ class RoBorregos (Robot):
 # create the Robot instance and run main loop
 wrestler = RoBorregos()
 print('Starting the robot...')
-wrestler.run() 
+wrestler.run()
