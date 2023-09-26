@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# comment de la suerte
+# comment de la suerte 1
 """
 Demonstrates the gait manager (inverse kinematics + simple ellipsoid path).
 """
