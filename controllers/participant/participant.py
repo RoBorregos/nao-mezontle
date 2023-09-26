@@ -204,7 +204,7 @@ class RoBorregos (Robot):
                             print("Search 3")
                             self.gait_manager.command_to_motors(desired_radius=0.01, heading_angle=1.57)
 
-                    
+            # comment de la suerte
             # Atacar al oponente.
             else:
 
