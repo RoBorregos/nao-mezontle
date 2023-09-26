@@ -70,6 +70,7 @@ class RoBorregos (Robot):
         self.last_change = time.time()
         self.TIMEOUT = 0.5
         self.last_rotation = time.time()
+        self.last_search = time.time()
         
         # Time before changing direction to stop the robot from falling off the ring
         self.counter = 0
@@ -186,19 +187,23 @@ class RoBorregos (Robot):
 
                 print("Search")
                 if self.handle_state_change('search'):
-                    
-                    normalized_x = self._get_normalized_opponent_x()
-                    desired_radius = (self.SMALLEST_TURNING_RADIUS / normalized_x) if abs(normalized_x) > 1e-3 else None
-                    # Girar hacia el último lado que se vio.
-                    if self.last_seen is None:
-                        print("Search 1")
-                        self.gait_manager.command_to_motors(desired_radius=0.01, heading_angle=1.57)
-                    elif self.last_seen < img.shape[1]/2:
-                        print("Search 2")
-                        self.gait_manager.command_to_motors(desired_radius=-0.01, heading_angle=1.57)
-                    else:
-                        print("Search 3")
-                        self.gait_manager.command_to_motors(desired_radius=0.01, heading_angle=1.57)
+                    if time.time() - self.last_search > 0.005:
+                        self.last_search = time.time()
+
+
+                        normalized_x = self._get_normalized_opponent_x()
+                        desired_radius = (self.SMALLEST_TURNING_RADIUS / normalized_x) if abs(normalized_x) > 1e-3 else None
+                        # Girar hacia el último lado que se vio.
+                        if self.last_seen is None:
+                            print("Search 1")
+                            self.gait_manager.command_to_motors(desired_radius=0.01, heading_angle=1.57)
+                        elif self.last_seen < img.shape[1]/2:
+                            print("Search 2")
+                            self.gait_manager.command_to_motors(desired_radius=-0.01, heading_angle=1.57)
+                        else:
+                            print("Search 3")
+                            self.gait_manager.command_to_motors(desired_radius=0.01, heading_angle=1.57)
+
                     
             # Atacar al oponente.
             else:
