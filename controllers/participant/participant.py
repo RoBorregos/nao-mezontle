@@ -71,8 +71,8 @@ class RoBorregos (Robot):
 
         self.last_change = time.time()
         self.TIMEOUT = 0.5
-        self.last_rotation = time.time()
-        self.last_search = time.time()
+        self.last_rotation = self.last_change 
+        self.last_search = self.last_change 
         
         # Time before changing direction to stop the robot from falling off the ring
         self.counter = 0
@@ -119,17 +119,6 @@ class RoBorregos (Robot):
         hip_roll = 0.2
         ankle_roll = -0.39
 
-        # self.LhipRoll = self.getDevice(f'LHipRoll')
-        # self.LhipRoll.setPosition(hip_roll)
-        
-        # self.RhipRoll = self.getDevice(f'RHipRoll')
-        # self.RhipRoll.setPosition(-hip_roll)
-
-        # self.LankleRoll = self.getDevice(f'LAnkleRoll')
-        # self.LankleRoll.setPosition(ankle_roll)
-
-        # self.RankleRoll = self.getDevice(f'RAnkleRoll')
-        # self.RankleRoll.setPosition(-ankle_roll)
 
         self.LhipPitch = self.getDevice(f'LHipPitch')
         self.LhipPitch.setPosition(hip_pitch)
@@ -228,15 +217,15 @@ class RoBorregos (Robot):
                             if self.is_nao_near():                                     
                                 
                                 self.current_motion.play_sync(self.library.get('ArmsUp3'), self, self.time_step)
-                                self.last_change = time.time()
+                                #self.last_change = time.time()
                                 
-                                if time.time() - self.last_rotation > 1:
-                                    while time.time() - self.last_change < self.TIMEOUT:
-                                    #if time.time() - self.last_change > self.TIMEOUT:
-                                        print("Rotating")
-                                        self.gait_manager.command_to_motors(desired_radius=0.01, heading_angle=1.57)
-                                        #self.last_change = time.time()
-                                    self.last_rotation = time.time()
+                                # if time.time() - self.last_rotation > 1:
+                                #     while time.time() - self.last_change < self.TIMEOUT:
+                                #     #if time.time() - self.last_change > self.TIMEOUT:
+                                #         print("Rotating")
+                                #         self.gait_manager.command_to_motors(desired_radius=0.01, heading_angle=1.57)
+                                #         #self.last_change = time.time()
+                                #     self.last_rotation = time.time()
                                     
                                 #self.current_motion.play_sync(self.library.get('ArmsUp'), self, self.time_step)
                             else:
@@ -275,6 +264,7 @@ class RoBorregos (Robot):
         elif hc_red is None:
             self.starting_color = 'blue'
 
+        print("done")
 
     def start_sequence(self):
         """At the beginning of the match, the robot walks forwards to move away from the edges."""
@@ -283,6 +273,7 @@ class RoBorregos (Robot):
 
         
         if GHOUL_READY:
+            print("Ghoul sequence")
             motion = Motion('../motions/Ghoul3.motion')  # look into this text file, it's easy to understand
             motion.setLoop(False)
             motion.play()
