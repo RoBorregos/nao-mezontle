@@ -3,7 +3,7 @@ File to transform .motion files to "nao format" (format given by choregraphe), w
 create motions in webots using nao_to_webots.
 """
 
-import os, pyperclip
+import os #pyperclip
 
 def convert_motion_file(input_file):
     names = []
@@ -44,7 +44,7 @@ def convert_motion_file(input_file):
 if __name__ == '__main__':
     # Run the script to generate the motion file
     # print(os.getcwd())
-    input_file = "./nao-mezontle/controllers/motions/BackFast.motion"
+    input_file = "./nao-mezontle/controllers/motions/BackFast3.motion"
     # input_file = "./controllers/motions/FastForward.motion"
     name = "back_fast"
     names, times, keys = convert_motion_file(input_file)
@@ -68,5 +68,5 @@ if __name__ == '__main__':
     
     all_text += f"\n\treturn names, times, keys\n\n"
 
-    pyperclip.copy(all_text)
+    #pyperclip.copy(all_text)
     print(all_text)
