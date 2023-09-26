@@ -189,7 +189,7 @@ class RoBorregos (Robot):
 
                 print("Search")
                 if self.handle_state_change('search'):
-                    if time.time() - self.last_search > 0.005:
+                    if time.time() - self.last_search > 0.001:
                         self.last_search = time.time()
 
 
