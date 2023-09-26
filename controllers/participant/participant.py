@@ -279,6 +279,7 @@ class RoBorregos (Robot):
     def start_sequence(self):
         """At the beginning of the match, the robot walks forwards to move away from the edges."""
         self.get_robot_color()
+       
 
         
         if GHOUL_READY:
