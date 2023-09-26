@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+# comment de la suerte
 """
 Demonstrates the gait manager (inverse kinematics + simple ellipsoid path).
 """
@@ -231,6 +231,7 @@ class RoBorregos (Robot):
                                 if time.time() - self.last_rotation > 1:
                                     while time.time() - self.last_change < self.TIMEOUT:
                                     #if time.time() - self.last_change > self.TIMEOUT:
+                                        print("Rotating")
                                         self.gait_manager.command_to_motors(desired_radius=0.01, heading_angle=1.57)
                                         #self.last_change = time.time()
                                     self.last_rotation = time.time()
@@ -243,7 +244,7 @@ class RoBorregos (Robot):
 
                         # self.current_motion.play_sync(self.library.get('SafePosition'), self, self.time_step)
 
-
+                    print("Walking...")
                     self.walk()
 
                 if self.last_handle != self.current_handle:
