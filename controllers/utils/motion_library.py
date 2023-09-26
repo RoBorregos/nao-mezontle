@@ -15,7 +15,6 @@
 import os
 from controller import Motion
 
-
 class MotionLibrary:
     def __init__(self):
         """Initializes the motion library with the motions in the motions folder."""

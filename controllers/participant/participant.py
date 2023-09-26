@@ -21,14 +21,23 @@ import sys
 
 sys.path.append('..')
 # Eve's locate_opponent() is implemented in this module:
+from utils.sonar import Sonar
+# from utils.move_routine import MoveRoutine
 from utils.image_processing import ImageProcessing as IP
 from utils.fall_detection import FallDetection
 from utils.gait_manager import GaitManager
 from utils.camera import Camera
+from utils.motion_library import MotionLibrary
 from utils.pose_estimator import PoseEstimator
+from utils.current_motion_manager import CurrentMotionManager
+from utils.behaviours import Behaviours
 import cv2
 import numpy as np
 import time
+
+
+GHOUL_READY = False
+PUNCH_READY = True
 
 class RoBorregos (Robot):
     SMALLEST_TURNING_RADIUS = 0.1
@@ -39,33 +48,74 @@ class RoBorregos (Robot):
         Robot.__init__(self)
         self.time_step = int(self.getBasicTimeStep())
 
+        self.sonar = Sonar(self, self.time_step)
         self.camera = Camera(self)
         self.fall_detector = FallDetection(self.time_step, self)
         self.gait_manager = GaitManager(self, self.time_step)
+        self.behaviours = Behaviours(self, self.time_step)
+        self.current_motion = CurrentMotionManager()
+        self.library = MotionLibrary()
         self.heading_angle = 3.14 / 2
         self.PE = PoseEstimator(self, self.time_step)
         self.starting_color = 'blue'
         self.last_seen = None
 
+        self.last_state = None
+        self.last_state_change = None
+        self.change_time = 0.1
+
+        self.last_handle = None
+        self.current_handle = None
         
         # Time before changing direction to stop the robot from falling off the ring
         self.counter = 0
 
     def run(self):
-        head_init = Motion('../motions/HeadDown.motion')
-        head_init.setLoop(False)
-        head_init.play()
+
         while self.step(self.time_step) != -1:
             # We need to update the internal theta value of the gait manager at every step:
             t = self.getTime()
             self.gait_manager.update_theta()
-            if 0.3 < t < 1:
+            if 0.3 < t < 0.5:
                 self.start_sequence()
             elif t > 1:
                 self.fall_detector.check()
                 self.stay_in_zone()
 
+    def handle_state_change(self, current_state):
+        if self.last_state != current_state:
+            self.last_state_change = time.time()
+            
+        self.last_state = current_state
+
+        return time.time() - self.last_state_change > self.change_time
+        
+    def is_nao_near(self):
+        img = self.camera.get_image()
+        horizontal_coordinate,w,_,_,area = IP.nao_detection(img, starting_color=self.starting_color)
+
+        if horizontal_coordinate is None:
+            return False
+
+        print("Sonar: ", self.sonar.get_new_averages()[0])
+        print("Area:", area)
+        print("Width:", w)
+        print("Diff:", w - horizontal_coordinate)
+        if area > 12500 and self.sonar.get_new_averages()[0] < 0.26 or w - horizontal_coordinate > 150:
+            return True
+        return False
+
     def stay_in_zone(self):
+        # self.current_motion.play_sync(self.library.get('ArmsUp'), self, self.time_step)
+        # self.current_motion.play_sync(self.library.get('SafePosition'), self, self.time_step)
+        # self.behaviours.safe_position()
+        # print("Punch sequence")
+        # self.behaviours.punch_position_legs()
+        # while self.step(self.time_step) != -1:
+        #     pass
+        #     self.current_motion.play_sync(self.library.get('ArmsUp'), self, self.time_step)
+
+
         side_max = 80
         side_mid = 48
         side_min = 10
@@ -83,7 +133,7 @@ class RoBorregos (Robot):
             # Prevenir Salirse del Ring.
             print("Backwards")
             self.gait_manager.command_to_motors(desired_radius=0, heading_angle=3.14159) 
-        # TO-DO: Considerar el caso de acercase al centro del ring.    
+        # TO-DO: Considerar el caso de estar en la orilla del ring.    
         # elif height > 80:
         #     #pa delante
         #     print("Forward")
@@ -94,19 +144,50 @@ class RoBorregos (Robot):
             if horizontal_coordinate is None:
 
                 print("Search")
-                # Girar hacia el último lado que se vio.
-                if self.last_seen is None:
-                    self.gait_manager.command_to_motors(desired_radius=0.1, heading_angle=self.heading_angle)
-                elif self.last_seen < img.shape[1]/2:
-                    self.gait_manager.command_to_motors(desired_radius=0, heading_angle=3.14159)
-                else:
-                    self.gait_manager.command_to_motors(desired_radius=0, heading_angle=0)
+                if self.handle_state_change('search'):
+                    
+                    normalized_x = self._get_normalized_opponent_x()
+                    desired_radius = (self.SMALLEST_TURNING_RADIUS / normalized_x) if abs(normalized_x) > 1e-3 else None
+                    # Girar hacia el último lado que se vio.
+                    if self.last_seen is None:
+                        print("Search 1")
+                        self.gait_manager.command_to_motors(desired_radius=0.01, heading_angle=1.57)
+                    elif self.last_seen < img.shape[1]/2:
+                        print("Search 2")
+                        self.gait_manager.command_to_motors(desired_radius=-0.01, heading_angle=1.57)
+                    else:
+                        print("Search 3")
+                        self.gait_manager.command_to_motors(desired_radius=0.01, heading_angle=1.57)
                     
             # Atacar al oponente.
             else:
+
                 print("Attack")
-                self.walk()
-         
+                self.current_handle = self.handle_state_change('attack')
+                if self.current_handle:
+                    print("Attacking...")
+                    if  self.is_nao_near() and PUNCH_READY:
+                        # self.behaviours.safe_position()
+                        # self.current_motion.play_sync(self.library.get('SafePosition'), self, self.time_step)
+                        print("Punch sequence")
+                        # self.behaviours.punch_position_legs()
+                        while self.step(self.time_step) != -1:
+                            if self.fall_detector.check():
+                                print("Fallen")
+                                break
+                            if self.is_nao_near(): 
+                                self.current_motion.play_sync(self.library.get('ArmsUp'), self, self.time_step)
+                            else:
+                                print("Nao not near")
+                                break
+
+                        # self.current_motion.play_sync(self.library.get('SafePosition'), self, self.time_step)
+
+
+                    self.walk()
+
+                if self.last_handle != self.current_handle:
+                    self.last_handle = self.current_handle
 
     # Find out current robot's color.
     def get_robot_color(self):
@@ -136,12 +217,35 @@ class RoBorregos (Robot):
         """At the beginning of the match, the robot walks forwards to move away from the edges."""
         self.get_robot_color()
 
+        
+        if GHOUL_READY:
+            motion = Motion('../motions/Ghoul3.motion')  # look into this text file, it's easy to understand
+            motion.setLoop(False)
+            motion.play()
+
+            
+            start_time = time.time()
+            while self.step(self.time_step) != -1 and time.time() - start_time < 1.6:
+                pass
+            
+            #motion = Motion('../motions/GetUpFront.motion')  # look into this text file, it's easy to understand
+            motion.setLoop(False)
+            motion.play()
+
+            start_time = time.time()
+            while self.step(self.time_step) != -1 and time.time() - start_time < 1.5:
+                pass
+
         self.headMotor = self.getDevice(f'HeadPitch')
         self.headMotor.setPosition(0.50)
+        self.headMotor = self.getDevice(f'HeadYaw')
+        self.headMotor.setPosition(0.0)
+
+
 
     def walk(self):
         """Walk towards the opponent like a homing missile."""
-        
+        self.behaviours.base_position()
 
         normalized_x = self._get_normalized_opponent_x()
         #print(normalized_x)
