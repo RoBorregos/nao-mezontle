@@ -36,7 +36,7 @@ import numpy as np
 import time
 
 
-GHOUL_READY = False
+GHOUL_READY = True
 PUNCH_READY = True
 
 class RoBorregos (Robot):
@@ -272,8 +272,8 @@ class RoBorregos (Robot):
             start_time = time.time()
             while self.step(self.time_step) != -1 and time.time() - start_time < 1.5:
                 pass
-        else:
-            self.safe_position()
+        # else:
+        #     self.safe_position()
 
 
         self.headMotor = self.getDevice(f'HeadPitch')
