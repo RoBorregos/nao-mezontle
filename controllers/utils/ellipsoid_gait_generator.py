@@ -26,37 +26,14 @@ from .pose_estimator import PoseEstimator
 
 
 class EllipsoidGaitGenerator():
-    # MAX_STEP_LENGTH_FRONT = 0.045
-    # MAX_STEP_LENGTH_SIDE = 0.016
-    MAX_STEP_LENGTH_FRONT = 0.03
-    # MAX_STEP_LENGTH_FRONT = 0.045
-    MAX_STEP_LENGTH_SIDE = 0.04
+    MAX_STEP_LENGTH_FRONT = 0.045
+    MAX_STEP_LENGTH_SIDE = 0.016
+    # MAX_STEP_LENGTH_FRONT = 0.03
+    # # MAX_STEP_LENGTH_FRONT = 0.045
+    # MAX_STEP_LENGTH_SIDE = 0.04
     MIN_Z = -0.327
 
     def __init__(self, robot, time_step):
-        # self.robot = robot
-        # self.time_step = time_step
-        # self.theta = 0  # angle of the ellipsoid path
-        # self.pose_estimator = PoseEstimator(robot, time_step)
-        # self.right_foot_sensor = robot.getDevice('RFsr')
-        # self.right_foot_sensor.enable(self.time_step)
-        # self.left_foot_sensor = robot.getDevice('LFsr')
-        # self.left_foot_sensor.enable(self.time_step)
-
-        # self.roll_reflex_factor = 4e-2  # h_VSR in the paper
-        # # the force reflex factor is h_ER/(mass*gravity) in the paper
-        # self.force_reflex_factor = 1e-2 / (5.305 * 9.81)
-        # self.robot_height_offset = 0.31  # desired height for the robot's center of mass
-        # self.lateral_leg_offset = 0.05  # y distance between the center of mass and one foot
-        # self.step_period = 0.4  # time to complete one step
-        # # amplitudes of stride:
-        # self.step_length_front = self.MAX_STEP_LENGTH_FRONT  # when heading in the front direction (x axis)
-        # self.step_length_side = self.MAX_STEP_LENGTH_SIDE  # when heading in the side direction (y axis)
-        # self.in_place_step_length = 0.02  # when turning in place
-        # self.step_height = 0.04  # height of the ellipsoid path
-        # self.step_penetration = 0.005  # depth of the ellipsoid path
-        # # turning radii are bigger than desired in simulation so we multiply by this factor:
-        # self.radius_calibration = 0.93
         self.robot = robot
         self.time_step = time_step
         self.theta = 0  # angle of the ellipsoid path
@@ -69,17 +46,40 @@ class EllipsoidGaitGenerator():
         self.roll_reflex_factor = 4e-2  # h_VSR in the paper
         # the force reflex factor is h_ER/(mass*gravity) in the paper
         self.force_reflex_factor = 1e-2 / (5.305 * 9.81)
-        self.robot_height_offset = 0.28  # desired height for the robot's center of mass
-        self.lateral_leg_offset = 0.06  # y distance between the center of mass and one foot
-        self.step_period = 0.21  # time to complete one step
+        self.robot_height_offset = 0.31  # desired height for the robot's center of mass
+        self.lateral_leg_offset = 0.05  # y distance between the center of mass and one foot
+        self.step_period = 0.4  # time to complete one step
         # amplitudes of stride:
         self.step_length_front = self.MAX_STEP_LENGTH_FRONT  # when heading in the front direction (x axis)
         self.step_length_side = self.MAX_STEP_LENGTH_SIDE  # when heading in the side direction (y axis)
         self.in_place_step_length = 0.02  # when turning in place
-        self.step_height = 0.0001  # height of the ellipsoid path
-        self.step_penetration = 0.01  # depth of the ellipsoid path
+        self.step_height = 0.04  # height of the ellipsoid path
+        self.step_penetration = 0.005  # depth of the ellipsoid path
         # turning radii are bigger than desired in simulation so we multiply by this factor:
         self.radius_calibration = 0.93
+        # self.robot = robot
+        # self.time_step = time_step
+        # self.theta = 0  # angle of the ellipsoid path
+        # self.pose_estimator = PoseEstimator(robot, time_step)
+        # self.right_foot_sensor = robot.getDevice('RFsr')
+        # self.right_foot_sensor.enable(self.time_step)
+        # self.left_foot_sensor = robot.getDevice('LFsr')
+        # self.left_foot_sensor.enable(self.time_step)
+
+        # self.roll_reflex_factor = 4e-2  # h_VSR in the paper
+        # # the force reflex factor is h_ER/(mass*gravity) in the paper
+        # self.force_reflex_factor = 1e-2 / (5.305 * 9.81)
+        # self.robot_height_offset = 0.28  # desired height for the robot's center of mass
+        # self.lateral_leg_offset = 0.06  # y distance between the center of mass and one foot
+        # self.step_period = 0.21  # time to complete one step
+        # # amplitudes of stride:
+        # self.step_length_front = self.MAX_STEP_LENGTH_FRONT  # when heading in the front direction (x axis)
+        # self.step_length_side = self.MAX_STEP_LENGTH_SIDE  # when heading in the side direction (y axis)
+        # self.in_place_step_length = 0.02  # when turning in place
+        # self.step_height = 0.0001  # height of the ellipsoid path
+        # self.step_penetration = 0.01  # depth of the ellipsoid path
+        # # turning radii are bigger than desired in simulation so we multiply by this factor:
+        # self.radius_calibration = 0.93
 
     def update_theta(self):
         '''Update the angle of the ellipsoid path and clip it to [-pi, pi]'''

@@ -68,11 +68,6 @@ class RoBorregos (Robot):
 
         self.last_handle = None
         self.current_handle = None
-
-        self.last_change = time.time()
-        self.TIMEOUT = 0.5
-        self.last_rotation = time.time()
-        self.last_search = time.time()
         
         # Time before changing direction to stop the robot from falling off the ring
         self.counter = 0
@@ -83,7 +78,7 @@ class RoBorregos (Robot):
             # We need to update the internal theta value of the gait manager at every step:
             t = self.getTime()
             self.gait_manager.update_theta()
-            if 0.3 < t < 0.55:
+            if 0.3 < t < 0.5:
                 self.start_sequence()
             elif t > 1:
                 self.fall_detector.check()
@@ -108,7 +103,7 @@ class RoBorregos (Robot):
         print("Area:", area)
         print("Width:", w)
         print("Diff:", w - horizontal_coordinate)
-        if area > 15000 and self.sonar.get_new_averages()[0] < 0.26 or w - horizontal_coordinate > 165:
+        if area > 12500 and self.sonar.get_new_averages()[0] < 0.26 or w - horizontal_coordinate > 150:
             return True
         return False
 
@@ -189,29 +184,24 @@ class RoBorregos (Robot):
 
                 print("Search")
                 if self.handle_state_change('search'):
-                    if time.time() - self.last_search > 0.001:
-                        self.last_search = time.time()
-
-
-                        normalized_x = self._get_normalized_opponent_x()
-                        desired_radius = (self.SMALLEST_TURNING_RADIUS / normalized_x) if abs(normalized_x) > 1e-3 else None
-                        # Girar hacia el último lado que se vio.
-                        if self.last_seen is None:
-                            print("Search 1")
-                            self.gait_manager.command_to_motors(desired_radius=0.01, heading_angle=1.57)
-                        elif self.last_seen < img.shape[1]/2:
-                            print("Search 2")
-                            self.gait_manager.command_to_motors(desired_radius=-0.01, heading_angle=1.57)
-                        else:
-                            print("Search 3")
-                            self.gait_manager.command_to_motors(desired_radius=0.01, heading_angle=1.57)
-
-            # comment de la suerte
+                    
+                    normalized_x = self._get_normalized_opponent_x()
+                    desired_radius = (self.SMALLEST_TURNING_RADIUS / normalized_x) if abs(normalized_x) > 1e-3 else None
+                    # Girar hacia el último lado que se vio.
+                    if self.last_seen is None:
+                        print("Search 1")
+                        self.gait_manager.command_to_motors(desired_radius=0.01, heading_angle=1.57)
+                    elif self.last_seen < img.shape[1]/2:
+                        print("Search 2")
+                        self.gait_manager.command_to_motors(desired_radius=-0.01, heading_angle=1.57)
+                    else:
+                        print("Search 3")
+                        self.gait_manager.command_to_motors(desired_radius=0.01, heading_angle=1.57)
+                    
             # Atacar al oponente.
             else:
 
                 print("Attack")
-                
                 self.current_handle = self.handle_state_change('attack')
                 if self.current_handle:
                     print("Attacking...")
@@ -220,33 +210,19 @@ class RoBorregos (Robot):
                         # self.current_motion.play_sync(self.library.get('SafePosition'), self, self.time_step)
                         print("Punch sequence")
                         # self.behaviours.punch_position_legs()
-                        self.last_change = time.time()
                         while self.step(self.time_step) != -1:
                             if self.fall_detector.check():
                                 print("Fallen")
                                 break
-                            if self.is_nao_near():                                     
-                                
-                                self.current_motion.play_sync(self.library.get('ArmsUp3'), self, self.time_step)
-                                self.last_change = time.time()
-                                
-                                if time.time() - self.last_rotation > 1:
-                                    while time.time() - self.last_change < self.TIMEOUT:
-                                    #if time.time() - self.last_change > self.TIMEOUT:
-                                        print("Rotating")
-                                        self.gait_manager.command_to_motors(desired_radius=0.01, heading_angle=1.57)
-                                        #self.last_change = time.time()
-                                    self.last_rotation = time.time()
-                                    
-                                #self.current_motion.play_sync(self.library.get('ArmsUp'), self, self.time_step)
+                            if self.is_nao_near(): 
+                                self.current_motion.play_sync(self.library.get('ArmsUp'), self, self.time_step)
                             else:
                                 print("Nao not near")
-                                self.last_change = time.time()
                                 break
 
                         # self.current_motion.play_sync(self.library.get('SafePosition'), self, self.time_step)
 
-                    print("Walking...")
+
                     self.walk()
 
                 if self.last_handle != self.current_handle:
@@ -279,7 +255,6 @@ class RoBorregos (Robot):
     def start_sequence(self):
         """At the beginning of the match, the robot walks forwards to move away from the edges."""
         self.get_robot_color()
-       
 
         
         if GHOUL_READY:
