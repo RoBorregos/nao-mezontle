@@ -66,6 +66,9 @@ class RoBorregos (Robot):
 
         self.last_handle = None
         self.current_handle = None
+
+        self.last_change = time.time()
+        self.TIMEOUT = 0.7
         
         # Time before changing direction to stop the robot from falling off the ring
         self.counter = 0
@@ -101,7 +104,7 @@ class RoBorregos (Robot):
         print("Area:", area)
         print("Width:", w)
         print("Diff:", w - horizontal_coordinate)
-        if area > 12500 and self.sonar.get_new_averages()[0] < 0.26 or w - horizontal_coordinate > 150:
+        if area > 15000 and self.sonar.get_new_averages()[0] < 0.26 or w - horizontal_coordinate > 165:
             return True
         return False
 
@@ -212,7 +215,13 @@ class RoBorregos (Robot):
                             if self.fall_detector.check():
                                 print("Fallen")
                                 break
-                            if self.is_nao_near(): 
+                            if self.is_nao_near():                                     
+                                
+                                if time.time() - self.last_change > self.TIMEOUT:
+                                    self.gait_manager.command_to_motors(desired_radius=0.01, heading_angle=1.57)
+                                else:
+                                    self.last_change = time.time()
+                                
                                 self.current_motion.play_sync(self.library.get('ArmsUp'), self, self.time_step)
                             else:
                                 print("Nao not near")
