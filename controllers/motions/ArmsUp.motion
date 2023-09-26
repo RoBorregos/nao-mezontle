@@ -1,4 +1,6 @@
-#WEBOTS_MOTION,V1.0,RShoulderRoll,LShoulderRoll,RShoulderPitch,LShoulderPitch,RElbowRoll,LElbowRoll,RElbowYaw,LElbowYaw
-00:00:000,Pose1,-0.4,0.4,0.7,0.7,0.8,-0.8,0.0,0.0
-00:00:200,Pose2,-0.4,0.1,-1.5,-1.5,0.8,-0.8,0.0,0.0
-00:00:400,Pose3,-0.4,0.4,0.7,0.7,0.8,-0.8,0.0,0.0
+#WEBOTS_MOTION,V1.0,RShoulderRoll,LShoulderRoll,RShoulderPitch,LShoulderPitch,RElbowRoll,LElbowRoll,RElbowYaw,LElbowYaw,RWristYaw,LWristYaw,LPhalanx1,RPhalanx1,LPhalanx2,RPhalanx2,LPhalanx3,RPhalanx3,LPhalanx4,RPhalanx4,LPhalanx5,RPhalanx5,LPhalanx6,RPhalanx6,LPhalanx7,RPhalanx7,LPhalanx8,RPhalanx8
+00:00:000,Pose1,-0.4,0.4,0.7,0.7,0.8,-0.8,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+00:00:050,Pose2,-0.4,0.4,0.7,0.7,0.8,-0.8,0.0,0.0,0.0,0.0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+00:00:100,Pose3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.8,1.8,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+00:00:150,Pose4,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.8,1.8,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+00:00:200,Pose5,-0.4,0.4,0.7,0.7,0.8,-0.8,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
