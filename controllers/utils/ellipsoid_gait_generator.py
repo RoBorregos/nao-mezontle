@@ -71,7 +71,7 @@ class EllipsoidGaitGenerator():
         self.force_reflex_factor = 1e-2 / (5.305 * 9.81)
         self.robot_height_offset = 0.28  # desired height for the robot's center of mass
         self.lateral_leg_offset = 0.06  # y distance between the center of mass and one foot
-        self.step_period = 0.25  # time to complete one step
+        self.step_period = 0.22  # time to complete one step
         # amplitudes of stride:
         self.step_length_front = self.MAX_STEP_LENGTH_FRONT  # when heading in the front direction (x axis)
         self.step_length_side = self.MAX_STEP_LENGTH_SIDE  # when heading in the side direction (y axis)

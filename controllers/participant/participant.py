@@ -108,7 +108,7 @@ class RoBorregos (Robot):
         print("Area:", area)
         print("Width:", w)
         print("Diff:", w - horizontal_coordinate)
-        if area > 14800 and self.sonar.get_new_averages()[0] < 0.26 or w - horizontal_coordinate > 165:
+        if area > 14000 and self.sonar.get_new_averages()[0] < 0.26 or w - horizontal_coordinate > 155:
             return True
         return False
 
@@ -222,8 +222,9 @@ class RoBorregos (Robot):
                                     while time.time() - self.last_change < self.TIMEOUT:
                                     #if time.time() - self.last_change > self.TIMEOUT:
                                         print("Rotating")
-                                        self.gait_manager.command_to_motors(desired_radius=0.01, heading_angle=1.57)
+                                        #self.gait_manager.command_to_motors(desired_radius=0.01, heading_angle=1.57)
                                         #self.last_change = time.time()
+                                        self.safe_position()
                                     self.last_rotation = time.time()
                                     
                                 self.current_motion.play_sync(self.library.get('ArmsUp3'), self, self.time_step)
