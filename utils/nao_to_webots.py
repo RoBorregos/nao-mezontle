@@ -4,7 +4,7 @@
 import csv
 import os
 from py_motions import movements
-from py_motions import ghoul
+from py_motions import arms_up
 from py_motions import ghoulUp
 from py_motions import gen_up
 from py_motions import back_fast3
@@ -28,13 +28,13 @@ def convert_time_to_webots_time(time, pose):
 
     return '00:' + ("%02d" % (sec,)) + ':' + ("%03d" % (milisec,)) + ',' + ('Pose%d' % pose)
 
-all_names, all_times, all_keys = back_fast3.back_fast() # NOTE: Python function should be called here!
+all_names, all_times, all_keys = arms_up.arms_up() # NOTE: Python function should be called here!
 
 first_row = ['#WEBOTS_MOTION','V1.0'] + all_names
 
 if __name__ == "__main__":
     path = "./nao-mezontle/controllers/motions"
-    motion = os.path.join(path, "BackFast3.motion") # Write file directly to motions directory
+    motion = os.path.join(path, "ArmsUp.motion") # Write file directly to motions directory
     time_set = set()
     with open(motion, 'w', encoding='UTF8', newline='') as f:
         writer = csv.writer(f)
