@@ -101,7 +101,7 @@ class RoBorregos (Robot):
         print("Area:", area)
         print("Width:", w)
         print("Diff:", w - horizontal_coordinate)
-        if area > 10000 and self.sonar.get_new_averages()[0] < 0.26 or w - horizontal_coordinate > 100:
+        if area > 12500 and self.sonar.get_new_averages()[0] < 0.26 or w - horizontal_coordinate > 150:
             return True
         return False
 

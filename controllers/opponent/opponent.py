@@ -56,6 +56,7 @@ class RoBorregos (Robot):
             if 0.3 < t < 2:
                 self.start_sequence()
             elif t > 2:
+                return
                 self.fall_detector.check()
                 self.walk()
 
