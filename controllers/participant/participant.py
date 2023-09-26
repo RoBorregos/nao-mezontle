@@ -71,19 +71,6 @@ class RoBorregos (Robot):
         self.counter = 0
 
     def run(self):
-        self.current_motion.play_sync(self.library.get('BackFast3'), self, self.time_step)
-        #self.current_motion.play_sync(self.library.get('Stand'), self, self.time_step)
-        # counter = 0
-        # while self.step(self.time_step) != -1:
-        #     self.current_motion.play_sync(self.library.get('ArmsUp'), self, self.time_step)
-        #     counter += 1
-        #     if counter > 10:
-        #         break
-        
-        # self.current_motion.play_sync(self.library.get('StandSafely'), self, self.time_step)
-
-        while self.step(self.time_step) != -1:
-            pass
 
         while self.step(self.time_step) != -1:
             # We need to update the internal theta value of the gait manager at every step:
@@ -189,7 +176,7 @@ class RoBorregos (Robot):
                                 print("Fallen")
                                 break
                             if self.is_nao_near(): 
-                                self.current_motion.play_sync(self.library.get('ArmsUp2'), self, self.time_step)
+                                self.current_motion.play_sync(self.library.get('ArmsUp'), self, self.time_step)
                             else:
                                 print("Nao not near")
                                 break

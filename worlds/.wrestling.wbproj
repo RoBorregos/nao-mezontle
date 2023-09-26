@@ -11,4 +11,6 @@ consoles: Console:wrestler red;participant:All
 consoles: Console:wrestler blue;opponent:All
 consoles: Console:All:All
 renderingDevicePerspectives: opponent:CameraBottom;1;1;0;0
-renderingDevicePerspectives: opponent:CameraTop;1;1;0.00517464;0.289593
+renderingDevicePerspectives: opponent:CameraTop;1;1;0;0
+renderingDevicePerspectives: participant:CameraBottom;1;1;0;0
+renderingDevicePerspectives: participant:CameraTop;1;1;0;0
