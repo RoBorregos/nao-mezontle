@@ -28,7 +28,7 @@ from .pose_estimator import PoseEstimator
 class EllipsoidGaitGenerator():
     MAX_STEP_LENGTH_FRONT = 0.03
     # MAX_STEP_LENGTH_FRONT = 0.045
-    MAX_STEP_LENGTH_SIDE = 0.016
+    MAX_STEP_LENGTH_SIDE = 0.02
     MIN_Z = -0.327
 
     def __init__(self, robot, time_step):
@@ -45,7 +45,7 @@ class EllipsoidGaitGenerator():
         # the force reflex factor is h_ER/(mass*gravity) in the paper
         self.force_reflex_factor = 1e-2 / (5.305 * 9.81)
         self.robot_height_offset = 0.28  # desired height for the robot's center of mass
-        self.lateral_leg_offset = 0.04  # y distance between the center of mass and one foot
+        self.lateral_leg_offset = 0.06  # y distance between the center of mass and one foot
         self.step_period = 0.3  # time to complete one step
         # amplitudes of stride:
         self.step_length_front = self.MAX_STEP_LENGTH_FRONT  # when heading in the front direction (x axis)
