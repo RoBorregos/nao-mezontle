@@ -68,7 +68,8 @@ class RoBorregos (Robot):
         self.current_handle = None
 
         self.last_change = time.time()
-        self.TIMEOUT = 0.7
+        self.TIMEOUT = 0.5
+        self.last_rotation = time.time()
         
         # Time before changing direction to stop the robot from falling off the ring
         self.counter = 0
@@ -203,6 +204,7 @@ class RoBorregos (Robot):
             else:
 
                 print("Attack")
+                
                 self.current_handle = self.handle_state_change('attack')
                 if self.current_handle:
                     print("Attacking...")
@@ -211,20 +213,27 @@ class RoBorregos (Robot):
                         # self.current_motion.play_sync(self.library.get('SafePosition'), self, self.time_step)
                         print("Punch sequence")
                         # self.behaviours.punch_position_legs()
+                        self.last_change = time.time()
                         while self.step(self.time_step) != -1:
                             if self.fall_detector.check():
                                 print("Fallen")
                                 break
                             if self.is_nao_near():                                     
                                 
-                                if time.time() - self.last_change > self.TIMEOUT:
-                                    self.gait_manager.command_to_motors(desired_radius=0.01, heading_angle=1.57)
-                                else:
-                                    self.last_change = time.time()
+                                self.current_motion.play_sync(self.library.get('ArmsUp3'), self, self.time_step)
+                                self.last_change = time.time()
                                 
-                                self.current_motion.play_sync(self.library.get('ArmsUp'), self, self.time_step)
+                                if time.time() - self.last_rotation > 1:
+                                    while time.time() - self.last_change < self.TIMEOUT:
+                                    #if time.time() - self.last_change > self.TIMEOUT:
+                                        self.gait_manager.command_to_motors(desired_radius=0.01, heading_angle=1.57)
+                                        #self.last_change = time.time()
+                                    self.last_rotation = time.time()
+                                    
+                                #self.current_motion.play_sync(self.library.get('ArmsUp'), self, self.time_step)
                             else:
                                 print("Nao not near")
+                                self.last_change = time.time()
                                 break
 
                         # self.current_motion.play_sync(self.library.get('SafePosition'), self, self.time_step)
