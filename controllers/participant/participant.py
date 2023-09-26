@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # comment de la suerte 1
-#fak
+# asi se queda
 
 """
 Demonstrates the gait manager (inverse kinematics + simple ellipsoid path).
