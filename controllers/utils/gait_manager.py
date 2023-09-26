@@ -46,7 +46,6 @@ class GaitManager():
         and a desired heading angle (in radians. 0 is straight on, > 0 is turning left).
         Send the commands to the motors.
         """
-        print('x cualquier cosa')
         if not desired_radius:
             desired_radius = 1e3
         x, y, z, yaw = self.gait_generator.compute_leg_position(
