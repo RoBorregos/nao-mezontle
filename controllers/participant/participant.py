@@ -72,7 +72,7 @@ class RoBorregos (Robot):
 
     def run(self):
         self.current_motion.play_sync(self.library.get('BackFast3'), self, self.time_step)
-        self.current_motion.play_sync(self.library.get('Stand'), self, self.time_step)
+        #self.current_motion.play_sync(self.library.get('Stand'), self, self.time_step)
         # counter = 0
         # while self.step(self.time_step) != -1:
         #     self.current_motion.play_sync(self.library.get('ArmsUp'), self, self.time_step)
